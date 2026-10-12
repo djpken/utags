@@ -1,3 +1,6 @@
+import { isExtension } from '../utils/environment'
+import { getExtensionApi } from '../utils/extension-messaging'
+
 /**
  * HTTP proxy for UTags webapp to bypass CORS restrictions
  */
@@ -109,12 +112,7 @@ function handleHttpRequest(
   message: HttpRequestMessage,
   event: MessageEvent
 ): void {
-  if (
-    // eslint-disable-next-line n/prefer-global/process
-    process.env.PLASMO_TARGET === 'chrome-mv3' ||
-    // eslint-disable-next-line n/prefer-global/process
-    process.env.PLASMO_TARGET === 'firefox-mv2'
-  ) {
+  if (isExtension) {
     handleHttpRequestExtension(message, event)
   } else {
     handleHttpRequestUserscript(message, event)
@@ -136,7 +134,13 @@ function handleHttpRequestExtension(
   console.log(`[UTags Extension] Processing HTTP request: ${method} ${url}`)
 
   // Forward request to background script
-  chrome.runtime
+  const api = getExtensionApi()
+  if (!api?.runtime?.sendMessage) {
+    sendHttpError(id, 'Extension communication unavailable', event)
+    return
+  }
+
+  api.runtime
     .sendMessage({
       type: 'HTTP_REQUEST',
       id,

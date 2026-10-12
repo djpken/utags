@@ -101,6 +101,7 @@ import type { UserTag, UserTagMeta } from './types'
 import { generateUtagsId, sortTags } from './utils'
 import { setupConsole } from './utils/console.js'
 import { EventListenerManager } from './utils/event-listener-manager'
+import { registerSettingsMessageListener } from './utils/extension-messaging'
 
 export const config: PlasmoCSConfig = {
   run_at: 'document_start',
@@ -109,21 +110,7 @@ export const config: PlasmoCSConfig = {
   all_frames: true,
 }
 
-if (
-  // eslint-disable-next-line n/prefer-global/process
-  process.env.PLASMO_TARGET === 'chrome-mv3' ||
-  // eslint-disable-next-line n/prefer-global/process
-  process.env.PLASMO_TARGET === 'firefox-mv2'
-) {
-  // Receive popup trigger to show settings in the content context
-  const runtime =
-    (globalThis as any).chrome?.runtime ?? (globalThis as any).browser?.runtime
-  runtime?.onMessage?.addListener((message: any) => {
-    if (message?.type === 'utags:show-settings') {
-      void showSettings()
-    }
-  })
-}
+registerSettingsMessageListener(showSettings)
 
 const EXCLUDED_SUBFRAME_HOSTS = new Set([
   'challenges.cloudflare.com',

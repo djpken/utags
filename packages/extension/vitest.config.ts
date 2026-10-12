@@ -1,10 +1,16 @@
+import { createRequire } from 'node:module'
 import { defineConfig } from 'vitest/config'
+
+const require = createRequire(import.meta.url)
 
 export default defineConfig({
   test: {
     // Enable test coverage
     coverage: {
-      provider: 'v8',
+      // Vitest's native provider import otherwise resolves the workspace's
+      // hoisted provider, which belongs to a different Vitest version.
+      provider: 'custom',
+      customProviderModule: require.resolve('@vitest/coverage-v8'),
       enabled: false,
       include: ['src/**/*'],
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**/*'],

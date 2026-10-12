@@ -95,13 +95,12 @@ async function handleHttpRequest(
     `[UTags Extension Background] Processing HTTP request: ${method} ${url}`
   )
 
-  try {
-    // Create AbortController for timeout handling
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => {
-      controller.abort()
-    }, timeout || 30_000)
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => {
+    controller.abort()
+  }, timeout || 30_000)
 
+  try {
     // Make the actual HTTP request
     const response = await fetch(url, {
       method,
@@ -110,10 +109,8 @@ async function handleHttpRequest(
       signal: controller.signal,
     })
 
-    clearTimeout(timeoutId)
-
     // Parse response headers
-    const responseHeaders = {}
+    const responseHeaders: Record<string, string> = {}
     for (const [key, value] of response.headers.entries()) {
       responseHeaders[key] = value
     }
@@ -154,6 +151,8 @@ async function handleHttpRequest(
         stack: error.stack as string,
       },
     }
+  } finally {
+    clearTimeout(timeoutId)
   }
 }
 
@@ -221,8 +220,10 @@ chrome.runtime.onInstalled.addListener(
 /**
  * Extension startup handler
  */
-chrome.runtime.onStartup.addListener(() => {
+chrome.runtime.onStartup?.addListener(() => {
   console.log('[UTags Extension Background] Extension started')
 })
 
 console.log('[UTags Extension Background] Background script ready')
+
+export {}

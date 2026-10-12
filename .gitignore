@@ -52,3 +52,7 @@ tsconfig.tsbuildinfo
 **/mock-data.json
 **/mock-server/.mock-data/
 **/coverage/*
+
+# Safari build resources and local Xcode signing projects
+**/build/safari-*/**
+**/build/safari-xcode/**

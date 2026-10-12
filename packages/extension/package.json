@@ -53,7 +53,7 @@
     "build": "run-s build:*",
     "build:chrome": "cross-env PARCEL_WORKER_BACKEND=process plasmo build && node scripts/chrome/update-manifest.mjs && node scripts/wrap-shadow-root.mjs build/chrome-mv3-prod",
     "build:firefox": "cross-env PARCEL_WORKER_BACKEND=process plasmo build --target=firefox-mv2 && node scripts/firefox/update-manifest.mjs && node scripts/wrap-shadow-root.mjs build/firefox-mv2-prod && addons-linter build/firefox-mv2-prod/",
-    "build:firefox-mv3": "cross-env PARCEL_WORKER_BACKEND=process plasmo build --target=firefox-mv3 && node scripts/firefox/update-manifest.mjs && node scripts/wrap-shadow-root.mjs build/firefox-mv3-prod && addons-linter build/firefox-mv3-prod/",
+    "build:firefox-mv3": "cross-env PARCEL_WORKER_BACKEND=process plasmo build --target=firefox-mv3 && node scripts/firefox/update-manifest.mjs build/firefox-mv3-prod/manifest.json && node scripts/wrap-shadow-root.mjs build/firefox-mv3-prod && addons-linter build/firefox-mv3-prod/",
     "build:userscript": "node scripts/userscript/build.mjs && pnpm prettier --log-level warn --write build/userscript-prod/",
     "build:userscript-no-adult": "node scripts/userscript/build-no-adult.mjs && pnpm prettier --log-level warn --write build/userscript-no-adult-prod/",
     "build:userscript-full": "node scripts/userscript/build-full.mjs && pnpm prettier --log-level warn --write build/userscript-full-prod/",
@@ -64,7 +64,13 @@
     "package:src": "../../pack-extension-source.sh && mv ../../utags-extension.tar.gz build/utags-extension.tar.gz",
     "test": "vitest --run",
     "test:watch": "vitest watch",
-    "test:ui": "vitest --ui --coverage.enabled=true"
+    "test:ui": "vitest --ui --coverage.enabled=true",
+    "build:safari": "cross-env PARCEL_WORKER_BACKEND=process plasmo build --target=safari-mv3 && node scripts/safari/update-manifest.mjs && node scripts/wrap-shadow-root.mjs build/safari-mv3-prod && pnpm validate:safari",
+    "package:safari": "pnpm validate:safari && plasmo package --target=safari-mv3",
+    "validate:safari": "node scripts/safari/validate.mjs",
+    "safari:project": "node scripts/safari/project.mjs",
+    "test:safari-tools": "node --test scripts/safari/*.test.mjs",
+    "test:safari-coverage": "vitest run src/utils/extension-messaging.test.ts src/modules/webapp-bridge.test.ts src/components/modal.test.ts src/background.test.ts --coverage --coverage.include=src/utils/environment.ts --coverage.include=src/utils/extension-messaging.ts --coverage.include=src/components/modal.ts --coverage.thresholds.perFile --coverage.thresholds.statements=80 --coverage.thresholds.branches=80 --coverage.thresholds.functions=80 --coverage.thresholds.lines=80"
   },
   "dependencies": {
     "browser-extension-i18n": "^0.1.3",
@@ -80,6 +86,7 @@
   "devDependencies": {
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "4.1.2",
     "addons-linter": "^10.3.0",
     "bookmarkleter": "^1.1.0",
     "cross-env": "^10.1.0",

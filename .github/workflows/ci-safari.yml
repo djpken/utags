@@ -1,0 +1,40 @@
+name: Safari extension
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter utags test
+      - run: pnpm --filter utags test:safari-tools
+      - run: pnpm --filter utags test:safari-coverage
+      - run: pnpm --filter utags build:safari
+      - run: pnpm --filter utags lint:type
+      - run: pnpm --filter utags package:safari
+      - name: Validate extracted Safari archive
+        run: |
+          unzip -q packages/extension/build/safari-mv3-prod.zip -d "$RUNNER_TEMP/utags-safari"
+          pnpm --filter utags exec node scripts/safari/validate.mjs "$RUNNER_TEMP/utags-safari"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: utags-safari-mv3
+          path: packages/extension/build/safari-mv3-prod.zip
+          if-no-files-found: error

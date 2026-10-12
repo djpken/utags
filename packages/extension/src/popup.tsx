@@ -1,28 +1,19 @@
+import { useState } from 'react'
+
 import { i } from './messages'
+import { openSettingsInActiveTab } from './utils/extension-messaging'
 
 function IndexPopup() {
-  const openSettings = () => {
-    const api: any = (globalThis as any).chrome ?? (globalThis as any).browser
+  const [error, setError] = useState('')
+  const openSettings = async () => {
     try {
-      if (api?.tabs?.query && api?.tabs?.sendMessage) {
-        api.tabs.query({ active: true, currentWindow: true }, (tabs: any[]) => {
-          const tabId = tabs?.[0]?.id
-          if (tabId) {
-            api.tabs.sendMessage(tabId, { type: 'utags:show-settings' })
-            try {
-              window.close()
-            } catch {}
-          }
-        })
-      }
-    } catch {
-      // ignore
-    }
-
-    // Fallback: close popup even if messaging is unavailable
-    try {
+      await openSettingsInActiveTab()
       window.close()
-    } catch {}
+    } catch {
+      setError(
+        'Allow UTags access to this website and reload the page, then try again.'
+      )
+    }
   }
 
   return (
@@ -41,6 +32,7 @@ function IndexPopup() {
         style={{ marginTop: 8, marginBottom: 20, width: '100%' }}>
         {i('prompt.settings')}
       </button>
+      {error && <p role="alert">{error}</p>}
       <ul
         style={{
           display: 'flex',

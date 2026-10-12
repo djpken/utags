@@ -107,6 +107,7 @@ A browser extension and userscript that enables tagging of web content across 50
 - **Firefox**: [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/utags/)
 - **Edge**: [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/utags-add-usertags-to-l/bhlbflbehfoccjjenpekilgabbjjnphe)
 - **Userscript**: [Greasy Fork](https://greasyfork.org/scripts/569761-utags-add-usertags-to-links)
+- **Safari**: [Native macOS/iPhone development build](docs/safari-development.md). Device validation is pending; see the [validation record](docs/safari-validation.md).
 
 #### Usage
 

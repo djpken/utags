@@ -10,14 +10,13 @@ import type { BookmarkTagsAndMetadata } from '../types/bookmarks.js'
 
 export const starTags = ['★★★', '★★', '★', '☆☆☆', '☆☆', '☆']
 
-// eslint-disable-next-line n/prefer-global/process
-export const isChromeExtension = process.env.PLASMO_TARGET === 'chrome-mv3'
-// eslint-disable-next-line n/prefer-global/process
-export const isFirefoxExtension = process.env.PLASMO_TARGET === 'firefox-mv2'
-export const isExtension = isChromeExtension || isFirefoxExtension
-// @ts-expect-error `scripts/common.mjs` handle it
-// eslint-disable-next-line n/prefer-global/process
-export const isUserscript = process.env.PLASMO_TARGET === 'userscript'
+export {
+  isChromeExtension,
+  isExtension,
+  isFirefoxExtension,
+  isSafariExtension,
+  isUserscript,
+} from './environment'
 // eslint-disable-next-line n/prefer-global/process
 export const isProduction = process.env.PLASMO_TAG === 'prod'
 
